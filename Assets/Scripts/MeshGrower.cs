@@ -34,10 +34,6 @@ public class MeshGrower : MonoBehaviour
     [SerializeField]
     private float growthRate = 50f;
     [SerializeField]
-    private float directionChangeSpeed = 0.1f;
-    [SerializeField]
-    private float turnAngleThreshold = 0.1f;
-    [SerializeField]
     private float turningRate = 1f;
 
     [Header("Segments")]
@@ -47,8 +43,6 @@ public class MeshGrower : MonoBehaviour
     private float minSegmentHeight = 0.1f;
     [SerializeField]
     private float timeToExpand = 2f;
-
-    private bool turning = false;
 
     public int subdivisions = 24;
     public float height = 1f;
