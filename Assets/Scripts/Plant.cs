@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Plant : MonoBehaviour
 {
     private Controls controls;
 
+    [Header("Prefabs")]
     [SerializeField]
     private GameObject plantSegmentPrefab;
     [SerializeField]
@@ -15,9 +17,12 @@ public class Plant : MonoBehaviour
     [SerializeField]
     private Transform cam;
     [SerializeField]
-    private AudioSource audio;
+    private AudioSource stretchSound;
+
     private bool isGrowing;
     private bool isTurning;
+
+    [Header("Growth")]
     [SerializeField]
     private Vector3 growthDirection = Vector3.up;
     [SerializeField]
@@ -31,6 +36,8 @@ public class Plant : MonoBehaviour
     private Transform lastSegment;
 
     private Queue<Transform> topSegments;
+
+    [Header("Segments")]
     [SerializeField]
     private Transform segmentsParent;
     [SerializeField]
@@ -45,6 +52,8 @@ public class Plant : MonoBehaviour
     private float maxSegmentSize = 1f;
     [SerializeField]
     private float segmentGrowthTime = 0.3f;
+
+    [Header("Leaf")]
     [SerializeField]
     private float minLeafSize = 0f;
     [SerializeField]
@@ -59,10 +68,14 @@ public class Plant : MonoBehaviour
         controls.MainControls.Grow.canceled += ctx => StopGrow();
         controls.MainControls.GrowthDirection.performed += ctx => StartTurning();
         controls.MainControls.GrowthDirection.canceled += ctx => StopTurning();
+        controls.MainControls.LockCursor.performed += ctx => ChangeCursorLock();
+        controls.MainControls.Reset.performed += ctx => ChangeLevel(SceneManager.GetActiveScene().name);
 
         lastSegment = transform;
         topSegments = new Queue<Transform>();
         point = topGameObject.transform.position;
+        Cursor.lockState = CursorLockMode.Locked;
+
     }
 
     private void Update()
@@ -71,6 +84,22 @@ public class Plant : MonoBehaviour
         topGameObject.transform.position = point;
         UpdateGrowthDirection();
 
+    }
+
+    private void ChangeCursorLock()
+    {
+        if(Cursor.lockState == CursorLockMode.None)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        } else
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
+
+    public void ChangeSegment(GameObject segment)
+    {
+        plantSegmentPrefab = segment;
     }
 
     private Vector2 MovementDirection()
@@ -91,14 +120,14 @@ public class Plant : MonoBehaviour
     private void Grow()
     {
         isGrowing = true;
-        audio.Play();
+        stretchSound.Play();
         StartCoroutine(GrowPlant());
     }
 
     private void StopGrow()
     {
         isGrowing = false;
-        audio.Stop();
+        stretchSound.Stop();
     }
 
     private void StartTurning()
@@ -191,6 +220,11 @@ public class Plant : MonoBehaviour
             leaf.localScale = Vector3.one * Mathf.SmoothStep(minLeafSize, maxLeafSize, elapsedTime / leafGrowthTime);
             yield return null;
         }
+    }
+
+    public void ChangeLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);
     }
 
     private void OnEnable()

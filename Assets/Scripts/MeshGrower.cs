@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class MeshGrower : MonoBehaviour
@@ -59,6 +60,9 @@ public class MeshGrower : MonoBehaviour
     [SerializeField]
     private Transform cam;
 
+    [SerializeField]
+    private AudioSource stretchSound;
+
     private void Awake()
     {
         controls = new Controls();
@@ -66,6 +70,8 @@ public class MeshGrower : MonoBehaviour
         controls.MainControls.Grow.canceled += ctx => StopGrow();
         controls.MainControls.GrowthDirection.performed += ctx => StartTurning();
         controls.MainControls.GrowthDirection.canceled += ctx => StopTurning();
+        controls.MainControls.LockCursor.performed += ctx => ChangeCursorLock();
+        controls.MainControls.Reset.performed += ctx => ChangeLevel(SceneManager.GetActiveScene().name);
     }
 
 
@@ -91,6 +97,18 @@ public class MeshGrower : MonoBehaviour
             UpdateMesh();
     }
 
+    private void ChangeCursorLock()
+    {
+        if (Cursor.lockState == CursorLockMode.None)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
+
     private Vector2 MovementDirection()
     {
         return controls.MainControls.GrowthDirection.ReadValue<Vector2>().normalized;
@@ -106,36 +124,6 @@ public class MeshGrower : MonoBehaviour
         }
     }
 
-
-    private void GeneratePlantBase()
-    {
-        vertices = new Vector3[(subdivisions + 1) * 2];
-        triangles = new int[subdivisions * 6];
-
-        for (int i = 0; i <= subdivisions; i++)
-        {
-            float angle = i * 2 * Mathf.PI / subdivisions;
-            float x = Mathf.Cos(angle) * radius;
-            float z = Mathf.Sin(angle) * radius;
-
-            vertices[i] = new Vector3(x, 0, z);
-            vertices[i + subdivisions + 1] = new Vector3(x, height, z);
-
-            if (i < subdivisions)
-            {
-                int j = 6 * i;
-                triangles[j] = i;
-                triangles[j + 1] = i + subdivisions + 1;
-                triangles[j + 2] = i + 1;
-                triangles[j + 3] = i + 1;
-                triangles[j + 4] = i + subdivisions + 1;
-                triangles[j + 5] = i + subdivisions + 2;
-            }
-        }
-        point = new Vector3(0, height, 0);
-        UpdateMesh();
-    }
-
     private void UpdateMesh()
     {
         mesh.Clear();
@@ -148,11 +136,14 @@ public class MeshGrower : MonoBehaviour
     {
         isGrowing = true;
         StartCoroutine(GrowPlant());
+        stretchSound.Play();
+
     }
 
     private void StopGrow()
     {
         isGrowing = false;
+        stretchSound.Stop();
     }
 
 
@@ -220,7 +211,7 @@ public class MeshGrower : MonoBehaviour
             circlePosition = rotation * circlePosition; // Rotate the position
             vertices[i] = circlePosition + point;
         }
-        point += (newHeight - height) * growthDirection * growthRate;
+        point += (newHeight - height) * growthRate * growthDirection;
     }
 
     void ResizeSecondToLastCircle(float newRadius, List<int> verticesToExpand, Vector3 lastPos)
@@ -331,6 +322,11 @@ public class MeshGrower : MonoBehaviour
         }
         ResizeSecondToLastCircle(radius, verticesToExpand, lastPos);
 
+    }
+
+    public void ChangeLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);
     }
 
     private void OnEnable()

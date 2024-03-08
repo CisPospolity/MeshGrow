@@ -53,6 +53,24 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""LockCursor"",
+                    ""type"": ""Button"",
+                    ""id"": ""c6f97adc-9b67-4e15-9ead-a69587bf63eb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reset"",
+                    ""type"": ""Button"",
+                    ""id"": ""662cb96f-0268-439c-a4e3-49ab47c3000b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -165,6 +183,39 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""CameraMovement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""afd6bab7-d0b3-479c-ad34-ffb6867dc4ec"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KMB"",
+                    ""action"": ""LockCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f0c2245e-0753-4f40-b62b-bc8bb1ddd800"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KMB"",
+                    ""action"": ""Reset"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a70d5be-46a6-4f3f-95dc-bbbed5ebd279"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Reset"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -204,6 +255,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_MainControls_Grow = m_MainControls.FindAction("Grow", throwIfNotFound: true);
         m_MainControls_GrowthDirection = m_MainControls.FindAction("GrowthDirection", throwIfNotFound: true);
         m_MainControls_CameraMovement = m_MainControls.FindAction("CameraMovement", throwIfNotFound: true);
+        m_MainControls_LockCursor = m_MainControls.FindAction("LockCursor", throwIfNotFound: true);
+        m_MainControls_Reset = m_MainControls.FindAction("Reset", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -268,6 +321,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_MainControls_Grow;
     private readonly InputAction m_MainControls_GrowthDirection;
     private readonly InputAction m_MainControls_CameraMovement;
+    private readonly InputAction m_MainControls_LockCursor;
+    private readonly InputAction m_MainControls_Reset;
     public struct MainControlsActions
     {
         private @Controls m_Wrapper;
@@ -275,6 +330,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Grow => m_Wrapper.m_MainControls_Grow;
         public InputAction @GrowthDirection => m_Wrapper.m_MainControls_GrowthDirection;
         public InputAction @CameraMovement => m_Wrapper.m_MainControls_CameraMovement;
+        public InputAction @LockCursor => m_Wrapper.m_MainControls_LockCursor;
+        public InputAction @Reset => m_Wrapper.m_MainControls_Reset;
         public InputActionMap Get() { return m_Wrapper.m_MainControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -293,6 +350,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @CameraMovement.started += instance.OnCameraMovement;
             @CameraMovement.performed += instance.OnCameraMovement;
             @CameraMovement.canceled += instance.OnCameraMovement;
+            @LockCursor.started += instance.OnLockCursor;
+            @LockCursor.performed += instance.OnLockCursor;
+            @LockCursor.canceled += instance.OnLockCursor;
+            @Reset.started += instance.OnReset;
+            @Reset.performed += instance.OnReset;
+            @Reset.canceled += instance.OnReset;
         }
 
         private void UnregisterCallbacks(IMainControlsActions instance)
@@ -306,6 +369,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @CameraMovement.started -= instance.OnCameraMovement;
             @CameraMovement.performed -= instance.OnCameraMovement;
             @CameraMovement.canceled -= instance.OnCameraMovement;
+            @LockCursor.started -= instance.OnLockCursor;
+            @LockCursor.performed -= instance.OnLockCursor;
+            @LockCursor.canceled -= instance.OnLockCursor;
+            @Reset.started -= instance.OnReset;
+            @Reset.performed -= instance.OnReset;
+            @Reset.canceled -= instance.OnReset;
         }
 
         public void RemoveCallbacks(IMainControlsActions instance)
@@ -346,5 +415,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnGrow(InputAction.CallbackContext context);
         void OnGrowthDirection(InputAction.CallbackContext context);
         void OnCameraMovement(InputAction.CallbackContext context);
+        void OnLockCursor(InputAction.CallbackContext context);
+        void OnReset(InputAction.CallbackContext context);
     }
 }
