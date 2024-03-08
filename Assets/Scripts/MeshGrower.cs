@@ -8,6 +8,21 @@ using UnityEngine.SceneManagement;
 public class MeshGrower : MonoBehaviour
 {
     private Controls controls;
+
+    [Header("Prefabs")]
+    [SerializeField]
+    private Transform pointGameobject;
+    [SerializeField]
+    private Transform cam;
+    [SerializeField]
+    private AudioSource stretchSound;
+
+    [Header("Growth")]
+    [SerializeField]
+    private Vector3 point = Vector3.zero;
+    [SerializeField]
+    private Vector3 lastPoint;
+
     [SerializeField]
     private Vector3 growthDirection = Vector3.up;
     [SerializeField]
@@ -17,11 +32,19 @@ public class MeshGrower : MonoBehaviour
     [SerializeField]
     private float initialGrowthRadius = 0.1f;
     [SerializeField]
+    private float growthRate = 50f;
+    [SerializeField]
+    private float directionChangeSpeed = 0.1f;
+    [SerializeField]
+    private float turnAngleThreshold = 0.1f;
+    [SerializeField]
+    private float turningRate = 1f;
+
+    [Header("Segments")]
+    [SerializeField]
     private float segmentHeight = 1f;
     [SerializeField]
     private float minSegmentHeight = 0.1f;
-    [SerializeField]
-    private float growthRate = 50f;
     [SerializeField]
     private float timeToExpand = 2f;
 
@@ -41,27 +64,11 @@ public class MeshGrower : MonoBehaviour
     private List<int> topCircleVertices;
     private List<int> secondToLastCircleVertices;
 
-    [SerializeField]
-    private float directionChangeSpeed = 0.1f;
-
-    [SerializeField]
-    private float turnAngleThreshold = 0.1f;
-    [SerializeField]
-    private float turningRate = 1f;
 
     private bool isTurning = false;
 
-    [SerializeField]
-    private Vector3 point = Vector3.zero;
-    [SerializeField]
-    private Vector3 lastPoint;
-    [SerializeField]
-    private Transform pointGameobject;
-    [SerializeField]
-    private Transform cam;
-
-    [SerializeField]
-    private AudioSource stretchSound;
+    
+    
 
     private void Awake()
     {
